@@ -32,11 +32,10 @@ public class HallServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         Ticket ticket = GSON.fromJson(req.getReader(), Ticket.class);
-        ticketStorage.createTicket(ticket);
 
         resp.setContentType("application/json; charset=utf-8");
         OutputStream output = resp.getOutputStream();
-        String json = GSON.toJson(ticket);
+        String json = GSON.toJson(ticketStorage.createTicket(ticket));
         output.write(json.getBytes(StandardCharsets.UTF_8));
         output.flush();
         output.close();

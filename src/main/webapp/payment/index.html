@@ -26,7 +26,38 @@
 
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <script>
+    let interval;
     $(document).ready(function () {
+        document.querySelector("body > div > div.row.pt-3 > h3").innerHTML
+            = "Вы выбрали ряд "
+            + localStorage.getItem("ticket").split("/")[0] + " место "
+            + localStorage.getItem("ticket").split("/")[1] + ", Сумма : 500 рублей.";
+        checkBusyTicket();
+        interval = setInterval(checkBusyTicket, 500);
+    });
+
+    function checkBusyTicket() {
+        $.ajax({
+            type: 'GET',
+            url: 'http://localhost:8080/cinema/hall',
+            dataType: 'json'
+        }).done(function (data) {
+            for (let ticket of data) {
+                let baseTicket = ticket.row + "/" + ticket.cell;
+                let localTicket = localStorage.getItem("ticket").split("/")[0] + "/"
+                    + localStorage.getItem("ticket").split("/")[1];
+                if (baseTicket === localTicket) {
+                    clearInterval(interval);
+                    busyTicket();
+                    break;
+                }
+            }
+        }).fail(function (err) {
+            console.log(err);
+        });
+    }
+
+    function sendTicket() {
         $.ajax({
             type: 'POST',
             url: 'http://localhost:8080/cinema/hall',
@@ -36,15 +67,19 @@
             }),
             dataType: 'json'
         }).done(function (data) {
-            document.querySelector("body > div > div.row.pt-3 > h3").innerHTML
-                = "Вы выбрали ряд " + data.row + " место " + data.cell + ", Сумма : 500 рублей.";
+            if (data.id === 0) {
+                busyTicket();
+            } else {
+                alert("Билет успешно забронирован")
+                window.location.href = "http://localhost:8080/cinema";
+            }
         }).fail(function (err) {
             console.log(err);
         });
-    });
+    }
 
-    function sendTicket() {
-        alert("Билет забронирован")
+    function busyTicket() {
+        alert("Извините, место уже занято. Выбирите другое место.");
         window.location.href = "http://localhost:8080/cinema";
     }
 </script>

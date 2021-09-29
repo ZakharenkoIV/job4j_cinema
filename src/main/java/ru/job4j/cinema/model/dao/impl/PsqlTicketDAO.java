@@ -42,7 +42,8 @@ public class PsqlTicketDAO implements TicketDAO {
         try (Connection cn = Psql.getConnection();
              PreparedStatement ps = cn.prepareStatement(
                      "INSERT INTO \"ticket\"(session_id, row, cell, account_id)"
-                             + "VALUES ((?), (?), (?), (?))")
+                             + "VALUES ((?), (?), (?), (?))",
+                     PreparedStatement.RETURN_GENERATED_KEYS)
         ) {
             ps.setInt(1, ticket.getSessionId());
             ps.setInt(2, ticket.getRow());
