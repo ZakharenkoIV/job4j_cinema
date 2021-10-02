@@ -1,12 +1,9 @@
 package ru.job4j.cinema.model.dao.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.job4j.cinema.model.Ticket;
 import ru.job4j.cinema.model.dao.TicketDAO;
 import ru.job4j.cinema.storage.Psql;
 
-import java.lang.invoke.MethodHandles;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,10 +13,8 @@ import java.util.Collection;
 import java.util.List;
 
 public class PsqlTicketDAO implements TicketDAO {
-    private static final Logger LOGGER = LoggerFactory.getLogger(
-            MethodHandles.lookup().lookupClass());
 
-    public Collection<Ticket> getAllTickets() {
+    public Collection<Ticket> getAllTickets() throws SQLException {
         List<Ticket> tickets = new ArrayList<>();
         try (Connection cn = Psql.getConnection()) {
             PreparedStatement ps = cn.prepareStatement("SELECT * FROM ticket");
@@ -32,13 +27,11 @@ public class PsqlTicketDAO implements TicketDAO {
                             rs.getInt("account_id")));
                 }
             }
-        } catch (SQLException e) {
-            LOGGER.error("Database getAllTickets error.", e);
         }
         return tickets;
     }
 
-    public Ticket createTicket(Ticket ticket) {
+    public Ticket createTicket(Ticket ticket) throws SQLException {
         try (Connection cn = Psql.getConnection();
              PreparedStatement ps = cn.prepareStatement(
                      "INSERT INTO \"ticket\"(session_id, row, cell, account_id)"
@@ -55,13 +48,11 @@ public class PsqlTicketDAO implements TicketDAO {
                     ticket.setId(id.getInt("id"));
                 }
             }
-        } catch (SQLException e) {
-            LOGGER.error("Database createTicket error.", e);
         }
         return ticket;
     }
 
-    public Collection<Ticket> findAllTicketByAccountId(int accountId) {
+    public Collection<Ticket> findAllTicketByAccountId(int accountId) throws SQLException {
         List<Ticket> tickets = new ArrayList<>();
         try (Connection cn = Psql.getConnection();
              PreparedStatement ps = cn.prepareStatement(
@@ -78,8 +69,6 @@ public class PsqlTicketDAO implements TicketDAO {
                             rs.getInt("account_id")));
                 }
             }
-        } catch (SQLException e) {
-            LOGGER.error("Database findAllTicketByAccountId error.", e);
         }
         return tickets;
     }

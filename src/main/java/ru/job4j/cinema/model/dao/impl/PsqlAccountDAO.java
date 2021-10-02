@@ -1,12 +1,9 @@
 package ru.job4j.cinema.model.dao.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.job4j.cinema.model.Account;
 import ru.job4j.cinema.model.dao.AccountDAO;
 import ru.job4j.cinema.storage.Psql;
 
-import java.lang.invoke.MethodHandles;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,10 +13,8 @@ import java.util.Collection;
 import java.util.List;
 
 public class PsqlAccountDAO implements AccountDAO {
-    private static final Logger LOGGER = LoggerFactory.getLogger(
-            MethodHandles.lookup().lookupClass());
 
-    public Collection<Account> getAllAccounts() {
+    public Collection<Account> getAllAccounts() throws SQLException {
         List<Account> accounts = new ArrayList<>();
         try (Connection cn = Psql.getConnection()) {
             PreparedStatement ps = cn.prepareStatement("SELECT * FROM account");
@@ -31,13 +26,11 @@ public class PsqlAccountDAO implements AccountDAO {
                             rs.getInt("phone")));
                 }
             }
-        } catch (SQLException e) {
-            LOGGER.error("Database getAllTickets error.", e);
         }
         return accounts;
     }
 
-    public Account createAccount(Account account) {
+    public Account createAccount(Account account) throws SQLException {
         try (Connection cn = Psql.getConnection();
              PreparedStatement ps = cn.prepareStatement(
                      "INSERT INTO \"account\"(username, email, phone) VALUES ((?), (?), (?))")
@@ -51,8 +44,6 @@ public class PsqlAccountDAO implements AccountDAO {
                     account.setId(id.getInt("id"));
                 }
             }
-        } catch (SQLException e) {
-            LOGGER.error("Database createTicket error.", e);
         }
         return account;
     }

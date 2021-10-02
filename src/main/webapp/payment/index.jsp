@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <!doctype html>
 <html lang="en">
 <head>
@@ -9,7 +10,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
-    <title>Hello, world!</title>
+    <title>Ticket booking</title>
 </head>
 <body>
 <!-- Optional JavaScript -->
@@ -67,9 +68,10 @@
             }),
             dataType: 'json'
         }).done(function (data) {
-            if (data.id === 0) {
+            if (data.status === 409) {
                 busyTicket();
             } else {
+                clearInterval(interval);
                 alert("Билет успешно забронирован")
                 window.location.href = "http://localhost:8080/cinema";
             }
